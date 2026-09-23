@@ -543,6 +543,37 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.40832537, y: -0.044458553, z: 0.8612102}
     m_Extent: {x: 0.1271103, y: 0.17335917, z: 0.4024249}
   m_DirtyAABB: 0
+--- !u!1 &3586624977173321772
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9152279212621841756}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9152279212621841756
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3586624977173321772}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.01, z: 0.244}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7758715407155149140}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3955604839784609721
 GameObject:
   m_ObjectHideFlags: 0
@@ -1141,6 +1172,7 @@ Transform:
   - {fileID: 7536846463350382836}
   - {fileID: 5102537558415442373}
   - {fileID: 8795811561862364039}
+  - {fileID: 9152279212621841756}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &3518203457483500181
@@ -1219,6 +1251,8 @@ MonoBehaviour:
   baseFireRate: 1
   baseDamage: 10
   targetMonster: {fileID: 0}
+  bulletPrefab: {fileID: 4899887100678141845, guid: 67ae142f2de5c46f99bf8de8e88e5f8d, type: 3}
+  firePoint: {fileID: 9152279212621841756}
 --- !u!114 &-9041209053935543035
 MonoBehaviour:
   m_ObjectHideFlags: 0

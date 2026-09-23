@@ -3,16 +3,19 @@ using UnityEngine;
 public class BotShooter : MonoBehaviour
 {
     [Header("Shooting Settings")]
-    public float baseFireRate = 1f; // Har 1 second mein shoot
-    public float baseDamage = 10f;  // Level 1 ka base damage
+    public float baseFireRate = 1f; 
+    public float baseDamage = 10f;  
     private float nextFireTime = 0f;
-    private float attackAnimationDuration = 0.3f; // Attack animation kitni dair chalegi
+    private float attackAnimationDuration = 0.3f; 
 
-    [Header("References")]
+    [Header("References & Effects")]
     public MonsterController targetMonster;
+    public GameObject bulletPrefab; // Yahan apni Bullet ya Fireball ka prefab lagana hai
+    public Transform firePoint;     // Jahan se bullet niklegi (agar nahi di toh bot ke center se niklegi)
+    
     private BotIdentity botIdentity;
     private GameplayHandler gameManager; 
-    private Animator botAnimator; // Bot ka animator component
+    private Animator botAnimator; 
 
     void Start()
     {
@@ -25,13 +28,11 @@ public class BotShooter : MonoBehaviour
             targetMonster = FindObjectOfType<MonsterController>();
         }
 
-        // Shuru mein Idle animation chala do
         SetAnimationState(true, false);
     }
 
     void Update()
     {
-        // Jab game 'Fighting' state mein ho tabhi bots shoot karenge
         if (gameManager != null && gameManager.currentState == GameplayHandler.GameState.Fighting)
         {
             if (targetMonster != null && Time.time >= nextFireTime)
@@ -46,7 +47,6 @@ public class BotShooter : MonoBehaviour
         }
         else
         {
-            // Fighting state na ho toh Idle rakho
             SetAnimationState(true, false);
         }
     }
@@ -60,15 +60,30 @@ public class BotShooter : MonoBehaviour
             finalDamage = baseDamage * botIdentity.level; 
         }
 
+        // FIX: Yahan se ghalat 'long.MinValue' wala check hata diya hai
         if (targetMonster != null)
         {
-            targetMonster.TakeDamage(finalDamage);
-
             // Attack animation trigger karo
             SetAnimationState(false, true);
-
-            // Thori der baad wapas Idle par le aao
             Invoke("ResetToIdle", attackAnimationDuration);
+
+            // Bullet / Fireball Spawn karo
+            if (bulletPrefab != null)
+            {
+                Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position;
+                GameObject bulletObj = Instantiate(bulletPrefab, spawnPos, Quaternion.identity);
+
+                Projectile projectileScript = bulletObj.GetComponent<Projectile>();
+                if (projectileScript != null)
+                {
+                    projectileScript.Initialize(targetMonster.transform, finalDamage);
+                }
+            }
+            else
+            {
+                // Fallback: Agar prefab na ho toh direct damage lag jaye
+                targetMonster.TakeDamage(finalDamage);
+            }
         }
     }
 
@@ -77,7 +92,6 @@ public class BotShooter : MonoBehaviour
         SetAnimationState(true, false);
     }
 
-    // Helper function animator ke bool parameters control karne ke liye
     void SetAnimationState(bool idle, bool attack)
     {
         if (botAnimator != null)

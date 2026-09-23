@@ -8,6 +8,10 @@ public class MonsterAttacker : MonoBehaviour
     private float nextAttackTime = 0f;
     private float attackAnimationDuration = 0.5f; 
 
+    [Header("Projectile Settings")]
+    public GameObject bulletPrefab; // Monster ka fireball/bullet prefab
+    public Transform firePoint;     // Kahan se fireball niklega (Jaise uske muh ya hath se)
+
     private GameplayHandler gameManager;
     private MonsterController monsterController;
 
@@ -33,12 +37,11 @@ public class MonsterAttacker : MonoBehaviour
         GameObject[] activeBots = GameObject.FindGameObjectsWithTag("Bot");
         if (activeBots.Length == 0)
         {
-            // Agar ek bhi bot nahi bacha, toh monster attack rok kar chup-chaap Idle khada ho jaye
             if (monsterController != null)
             {
                 monsterController.TriggerIdleAnimation();
             }
-            return; // Yahin se update roko taake attack timer aage na chale
+            return; 
         }
 
         // 3. Normal fighting logic agar bots mojood hain
@@ -57,19 +60,35 @@ public class MonsterAttacker : MonoBehaviour
             Invoke("ResetToIdle", attackAnimationDuration);
         }
 
+        // Random bot select karo
         GameObject randomBot = activeBots[Random.Range(0, activeBots.Length)];
 
-        BotHealth botHealth = randomBot.GetComponent<BotHealth>();
-        if (botHealth != null)
+        // Bullet / Fireball Spawn karo
+        if (bulletPrefab != null)
         {
-            botHealth.TakeDamage(attackDamage);
-            Debug.Log("Monster attacked a bot for " + attackDamage + " damage!");
+            Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position;
+            GameObject bulletObj = Instantiate(bulletPrefab, spawnPos, Quaternion.identity);
+
+            Projectile projectileScript = bulletObj.GetComponent<Projectile>();
+            if (projectileScript != null)
+            {
+                // Target (bot) aur damage pass kar do
+                projectileScript.Initialize(randomBot.transform, attackDamage);
+            }
+        }
+        else
+        {
+            // Fallback: Agar prefab na ho toh direct instant damage de do (purana tareeqa)
+            BotHealth botHealth = randomBot.GetComponent<BotHealth>();
+            if (botHealth != null)
+            {
+                botHealth.TakeDamage(attackDamage);
+            }
         }
     }
 
     void ResetToIdle()
     {
-        // Sirf tab idle karein agar game abhi bhi fighting state mein hai
         if (monsterController != null && gameManager != null && gameManager.currentState == GameplayHandler.GameState.Fighting)
         {
             monsterController.TriggerIdleAnimation();
